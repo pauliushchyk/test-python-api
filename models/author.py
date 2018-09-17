@@ -7,7 +7,7 @@ class Author(db.Entity):
 
     id = orm.PrimaryKey(int, auto=True)
 
-    firstName = orm.Required(str)
-    lastName = orm.Required(str)
+    first_name = orm.Required(str)
+    last_name = orm.Required(str)
 
     books = orm.Set("Book")
