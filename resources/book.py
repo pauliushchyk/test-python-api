@@ -10,21 +10,31 @@ from models.genre import Genre
 class BookAPI(Resource):
     @orm.db_session
     def get(self, id):
-        return jsonify(Book[int(id)].to_dict())
+        try:
+            if not Book.exists(lambda book: book.id == int(id)):
+                return None, 404
+
+            return jsonify(Book[int(id)].to_dict())
+
+        except Exception as exception:
+            return exception, 404
 
     @orm.db_session
     def put(self, id):
-        info = json.loads(request.data)
-        parse = info['book']
-
         try:
+            if not Book.exists(lambda book: book.id == int(id)):
+                return None, 404
+
+            info = json.loads(request.data)
+            parse = info['book']
+
             result = Book[int(id)]
             result.set(
                 name=parse['name'],
                 description=parse['description'],
                 pages=parse['pages'],
                 image=parse['image'],
-                author=Author[int(parse['authorId'])],
+                author=Author[int(parse['author_id'])],
                 genres=[genre
                         for genre
                         in Genre.select(lambda g: g.id in parse['genres'])]
@@ -37,6 +47,13 @@ class BookAPI(Resource):
 
     @orm.db_session
     def delete(self, id):
-        Book[int(id)].delete()
+        try:
+            if not Book.exists(lambda book: book.id == int(id)):
+                return None, 404
 
-        return {}, 200
+            Book[int(id)].delete()
+
+            return {}, 200
+
+        except Exception as exception:
+            return exception

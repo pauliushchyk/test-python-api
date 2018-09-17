@@ -17,13 +17,13 @@ class AuthorsAPI(Resource):
 
         try:
             result = Author(
-                firstName=parse['firstName'],
-                lastName=parse['lastName'],
+                first_name=parse['first_name'],
+                last_name=parse['last_name'],
             )
 
             orm.commit()
 
-            return jsonify(result)
+            return jsonify(result.to_dict())
 
         except Exception as exception:
             return exception

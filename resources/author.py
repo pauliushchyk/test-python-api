@@ -8,18 +8,28 @@ from models.author import Author
 class AuthorAPI(Resource):
     @orm.db_session
     def get(self, id):
-        return jsonify(Author[int(id)].to_dict())
+        try:
+            if not Author.exists(lambda author: author.id == int(id)):
+                return None, 404
+
+            return jsonify(Author[int(id)].to_dict())
+
+        except Exception as exception:
+            return exception, 404
 
     @orm.db_session
     def put(self, id):
-        info = json.loads(request.data)
-        parse = info['author']
-
         try:
+            if not Author.exists(lambda author: author.id == int(id)):
+                return None, 404
+
+            info = json.loads(request.data)
+            parse = info['author']
+
             result = Author[int(id)]
             result.set(
-                firstName=parse['firstName'],
-                lastName=parse['lastName'],
+                first_name=parse['first_name'],
+                last_name=parse['last_name'],
             )
 
             return jsonify(result.to_dict())
@@ -29,6 +39,13 @@ class AuthorAPI(Resource):
 
     @orm.db_session
     def delete(self, id):
-        Author[int(id)].delete()
+        try:
+            if not Author.exists(lambda author: author.id == int(id)):
+                return None, 404
 
-        return {}, 200
+            Author[int(id)].delete()
+
+            return None, 200
+
+        except Exception as exception:
+            return exception

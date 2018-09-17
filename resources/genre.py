@@ -8,14 +8,24 @@ from models.genre import Genre
 class GenreAPI(Resource):
     @orm.db_session
     def get(self, id):
-        return jsonify(Genre[int(id)].to_dict())
+        try:
+            if not Genre.exists(lambda genre: genre.id == int(id)):
+                return None, 404
+
+            return jsonify(Genre[int(id)].to_dict())
+
+        except Exception as exception:
+            return exception, 404
 
     @orm.db_session
     def put(self, id):
-        info = json.loads(request.data)
-        parse = info['genre']
-
         try:
+            if not Genre.exists(lambda genre: genre.id == int(id)):
+                return None, 404
+
+            info = json.loads(request.data)
+            parse = info['genre']
+
             result = Genre[int(id)]
             result.set(
                 name=parse['name'],
@@ -28,6 +38,13 @@ class GenreAPI(Resource):
 
     @orm.db_session
     def delete(self, id):
-        Genre[int(id)].delete()
+        try:
+            if not Genre.exists(lambda genre: genre.id == int(id)):
+                return None, 404
 
-        return {}, 200
+            Genre[int(id)].delete()
+
+            return None, 200
+
+        except Exception as exception:
+            return exception

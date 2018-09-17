@@ -22,7 +22,7 @@ class BooksAPI(Resource):
                 name=parse['name'],
                 description=parse['description'],
                 pages=parse['pages'],
-                author=Author[int(parse['authorId'])],
+                author=Author[int(parse['author_id'])],
                 genres=[genre
                         for genre
                         in Genre.select(lambda g: g.id in parse['genres'])],
